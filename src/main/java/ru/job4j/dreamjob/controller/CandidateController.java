@@ -36,7 +36,7 @@ public class CandidateController {
             model.addAttribute("message", "Резюме с указанным идентификатором не найдена");
             return "errors/404";
         }
-        model.addAttribute("vacancy", candidateOptional.get());
+        model.addAttribute("candidate", candidateOptional.get());
         return "candidates/one";
     }
 
