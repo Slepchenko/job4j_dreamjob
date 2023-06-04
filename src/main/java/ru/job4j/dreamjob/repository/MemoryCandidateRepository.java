@@ -20,11 +20,11 @@ public class MemoryCandidateRepository implements CandidateRepository {
     private final Map<Integer, Candidate> candidates = new HashMap<>();
 
     private MemoryCandidateRepository() {
-        save(new Candidate(0, "Ivanov", "description1", LocalDateTime.now(), true, 1));
-        save(new Candidate(0, "Petrov", "description2", LocalDateTime.now(), true, 3));
-        save(new Candidate(0, "Sidorov", "description3", LocalDateTime.now(), true, 3));
-        save(new Candidate(0, "Alexandrov", "description4", LocalDateTime.now(), true, 2));
-        save(new Candidate(0, "Sergeev", "description5", LocalDateTime.now(), true, 2));
+        save(new Candidate(0, "Ivanov", "description1", LocalDateTime.now(), true, 1, 0));
+        save(new Candidate(0, "Petrov", "description2", LocalDateTime.now(), true, 3, 0));
+        save(new Candidate(0, "Sidorov", "description3", LocalDateTime.now(), true, 3, 0));
+        save(new Candidate(0, "Alexandrov", "description4", LocalDateTime.now(), true, 2, 0));
+        save(new Candidate(0, "Sergeev", "description5", LocalDateTime.now(), true, 2, 0));
     }
 
     @Override
@@ -42,8 +42,10 @@ public class MemoryCandidateRepository implements CandidateRepository {
     @Override
     public boolean update(Candidate candidate) {
         return candidates.computeIfPresent(candidate.getId(), (id, oldVacancy) ->
-                new Candidate(oldVacancy.getId(), candidate.getName(), candidate.getDescription(),
-                        candidate.getCreationDate(), candidate.getVisible(), candidate.getCityId())) != null;
+                new Candidate(
+                        oldVacancy.getId(), candidate.getName(), candidate.getDescription(),
+                        candidate.getCreationDate(), candidate.getVisible(), candidate.getCityId(),
+                        candidate.getFileId())) != null;
     }
 
     @Override
