@@ -59,7 +59,6 @@ class Sql2oCandidateRepositoryTest {
         }
     }
 
-    /*
     @Test
     public void whenSaveThenGetSame() {
         var creationDate = now().truncatedTo(ChronoUnit.MINUTES);
@@ -120,6 +119,4 @@ class Sql2oCandidateRepositoryTest {
         var isUpdated = sql2oCandidateRepository.update(candidate);
         assertThat(isUpdated).isFalse();
     }
-
-     */
 }
