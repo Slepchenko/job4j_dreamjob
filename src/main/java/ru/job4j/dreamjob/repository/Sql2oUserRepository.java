@@ -39,8 +39,9 @@ public class Sql2oUserRepository implements UserRepository {
     @Override
     public Optional<User> findByEmailAndPassword(String email, String password) {
         try (var connection = sql2o.open()) {
-            var query = connection.createQuery("SELECT * FROM users WHERE email = :email and password = :password");
-            query.addParameter(email, password);
+            var query = connection.createQuery("SELECT * FROM users WHERE email = :email and password = :password")
+                    .addParameter("email", email)
+                    .addParameter("password", password);
             var user = query.setColumnMappings(User.COLUMN_MAPPING).executeAndFetchFirst(User.class);
             return Optional.of(user);
         }

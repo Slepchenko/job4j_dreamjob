@@ -12,13 +12,13 @@ public class User {
             "password", "password"
     );
 
-    int id;
+    private int id;
 
-    String email;
+    private String email;
 
-    String name;
+    private String name;
 
-    String password;
+    private String password;
 
     public User(int id, String email, String name, String password) {
         this.id = id;
@@ -73,6 +73,6 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, email, name, password);
+        return Objects.hash(id);
     }
 }
