@@ -23,7 +23,6 @@ public class UserController {
 
     @GetMapping("/register")
     public String getRegistrationPage(Model model) {
-        model.addAttribute("users");
         return "users/register";
     }
 

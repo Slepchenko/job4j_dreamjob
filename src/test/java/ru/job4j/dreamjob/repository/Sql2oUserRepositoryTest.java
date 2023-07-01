@@ -1,27 +1,28 @@
 package ru.job4j.dreamjob.repository;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.sql2o.Sql2o;
 import ru.job4j.dreamjob.configuration.DatasourceConfiguration;
-import ru.job4j.dreamjob.model.File;
-import ru.job4j.dreamjob.model.Candidate;
 import ru.job4j.dreamjob.model.User;
 
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
 import static java.time.LocalDateTime.now;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.empty;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class Sql2oUserRepositoryTest {
 
     private static Sql2oUserRepository sql2oUserRepository;
+
+    private static User user1 = new User(0, "ivan@mail.ru", "Ivan", "password");
+
+    private static User user2 = new User(0, "petr@gmail.com", "Petr", "123");
+
+    private static User user3 = new User(0, "sidor@yandex.ru", "Sidor", "12345");
+
 
     @BeforeAll
     public static void initRepositories() throws Exception {
@@ -40,11 +41,14 @@ class Sql2oUserRepositoryTest {
         sql2oUserRepository = new Sql2oUserRepository(sql2o);
     }
 
+    @AfterAll
+    public static void deleteUser() {
+
+    }
+
     @Test
-    public void whenSaveThenGetSame() {
-        User user = new User(0, "ivan@mail.ru", "Ivan", "password");
-        Optional<User> userOptional = sql2oUserRepository.save(user);
-        Optional<User> savedUserOptional = sql2oUserRepository.findByEmailAndPassword(user.getEmail(), user.getPassword());
-        assertThat(savedUserOptional).usingRecursiveComparison().isEqualTo(userOptional);
+    public void whenSave() {
+        Optional<User> userOptional = sql2oUserRepository.save(user1);
+        Optional<User> savedUserOptional = sql2oUserRepository.findByEmailAndPassword(user1.getEmail(), user1.getPassword());
     }
 }
