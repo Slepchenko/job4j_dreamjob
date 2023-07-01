@@ -17,9 +17,7 @@ public class SimpleUserService implements UserService {
 
     @Override
     public Optional<User> save(User user) {
-        Optional<User> optionalUser = Optional.ofNullable(user);
-        userRepository.save(user);
-        return optionalUser;
+        return userRepository.save(user);
     }
 
     @Override

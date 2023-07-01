@@ -34,6 +34,6 @@ public class UserController {
             model.addAttribute("message", "Пользователь с такой почтой уже существует");
             return "errors/404";
         }
-        return "redirect:/register";
+        return "users/account";
     }
 }
