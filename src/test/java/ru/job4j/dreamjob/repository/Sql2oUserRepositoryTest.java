@@ -12,17 +12,11 @@ import java.util.Properties;
 
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.shouldHaveThrown;
 
 class Sql2oUserRepositoryTest {
 
     private static Sql2oUserRepository sql2oUserRepository;
-
-    private static User user1 = new User(0, "ivan@mail.ru", "Ivan", "password");
-
-    private static User user2 = new User(0, "petr@gmail.com", "Petr", "123");
-
-    private static User user3 = new User(0, "sidor@yandex.ru", "Sidor", "12345");
-
 
     @BeforeAll
     public static void initRepositories() throws Exception {
@@ -42,13 +36,16 @@ class Sql2oUserRepositoryTest {
     }
 
     @AfterAll
-    public static void deleteUser() {
-
+    public static void deleteUsers() {
+        var users = sql2oUserRepository.findAll();
+        for (var u : users) {
+            sql2oUserRepository.delete(u.getEmail(), u.getPassword());
+        }
     }
 
     @Test
     public void whenSave() {
+        User user1 = new User(0, "ivan@mail.ru", "Ivan", "password");
         Optional<User> userOptional = sql2oUserRepository.save(user1);
-        Optional<User> savedUserOptional = sql2oUserRepository.findByEmailAndPassword(user1.getEmail(), user1.getPassword());
     }
 }
