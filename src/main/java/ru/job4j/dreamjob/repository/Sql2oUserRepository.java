@@ -49,14 +49,10 @@ public class Sql2oUserRepository implements UserRepository {
     }
 
     public boolean delete(String email, String password) {
-        Optional<User> user = findByEmailAndPassword(email, password);
-        if (user.isEmpty()) {
-            return false;
-        }
         try (var connection = sql2o.open()) {
             var query = connection.createQuery("DELETE FROM users WHERE email = :email and password = :password")
-                    .addParameter("email", user.get().getEmail())
-                    .addParameter("password", user.get().getPassword());
+                    .addParameter("email", email)
+                    .addParameter("password", password);
             var affectedRows = query.executeUpdate().getResult();
             return affectedRows > 0;
         }

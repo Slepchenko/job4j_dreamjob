@@ -63,7 +63,6 @@ class Sql2oUserRepositoryTest {
 
     @Test
     public void whenDontSaveThenNothingFound() {
-        List<User> expected = new ArrayList<>();
         assertThat(sql2oUserRepository.findAll()).isEqualTo(emptyList());
     }
 
