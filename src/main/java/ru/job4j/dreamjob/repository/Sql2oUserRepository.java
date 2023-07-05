@@ -45,7 +45,8 @@ public class Sql2oUserRepository implements UserRepository {
                     .addParameter("password", password);
             var user = query.setColumnMappings(User.COLUMN_MAPPING).executeAndFetchFirst(User.class);
             return Optional.ofNullable(user);
-        }    }
+        }
+    }
 
     public boolean delete(String email, String password) {
         try (var connection = sql2o.open()) {
