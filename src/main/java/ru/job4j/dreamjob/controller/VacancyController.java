@@ -31,7 +31,8 @@ public class VacancyController {
     }
 
     @GetMapping("/create")
-    public String getCreationPage() {
+    public String getCreationPage(Model model) {
+        model.addAttribute("cities", cityService.findAll());
         return "vacancies/create";
     }
 
