@@ -12,6 +12,7 @@ import ru.job4j.dreamjob.model.Vacancy;
 import ru.job4j.dreamjob.service.CityService;
 import ru.job4j.dreamjob.service.VacancyService;
 
+import java.io.IOException;
 import java.util.List;
 
 import static java.time.LocalDateTime.now;
@@ -83,7 +84,6 @@ public class VacancyControllerTest {
         assertThat(view).isEqualTo("redirect:/vacancies");
         assertThat(actualVacancy).isEqualTo(vacancy);
         assertThat(fileDto).usingRecursiveComparison().isEqualTo(actualFileDto);
-
     }
 
 
@@ -101,18 +101,21 @@ public class VacancyControllerTest {
     }
 
     @Test
-    public void whenGetByIdThenTrue() {
-        var vacancy1 = new Vacancy(1, "test1", "desc1", now(), true, 1, 2);
-        var vacancy2 = new Vacancy(2, "test2", "desc2", now(), false, 3, 4);
-        var expectedVacancies = List.of(vacancy1, vacancy2);
-        when(vacancyService.findAll()).thenReturn(expectedVacancies);
+    public void whenGetByIdThenTrue() throws IOException {
+        var vacancy = new Vacancy(1, "test1", "desc1", now(), true, 1, 2);
+        var fileDto = new FileDto(testFile.getOriginalFilename(), testFile.getBytes());
+        var vacancyArgumentCaptor = ArgumentCaptor.forClass(Vacancy.class);
+        var fileDtoArgumentCaptor = ArgumentCaptor.forClass(FileDto.class);
+        when(vacancyService.save(vacancyArgumentCaptor.capture(), fileDtoArgumentCaptor.capture())).thenReturn(vacancy);
 
         var model = new ConcurrentModel();
-        var view = vacancyController.getAll(model);
-        var actualVacancies = model.getAttribute("vacancies");
-
-        assertThat(view).isEqualTo("vacancies/list");
-        assertThat(actualVacancies).isEqualTo(expectedVacancies);
+        vacancyController.create(vacancy, testFile, model);
+        var view = vacancyController.getById(model, 1);
+        var actualVacancy = vacancyArgumentCaptor.getValue();
+        var actualFileDto = fileDtoArgumentCaptor.getValue();
+        assertThat(view).isEqualTo("vacancies/one");
+        assertThat(actualVacancy).isEqualTo(vacancy);
+        assertThat(fileDto).usingRecursiveComparison().isEqualTo(actualFileDto);
     }
 
 }
