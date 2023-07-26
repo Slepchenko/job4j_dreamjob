@@ -3,6 +3,7 @@ package ru.job4j.dreamjob.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,7 @@ import ru.job4j.dreamjob.service.VacancyService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -35,7 +37,7 @@ public class VacancyControllerTest {
         vacancyService = mock(VacancyService.class);
         cityService = mock(CityService.class);
         vacancyController = new VacancyController(vacancyService, cityService);
-        testFile = new MockMultipartFile("testFile.img", new byte[] {1, 2, 3});
+        testFile = new MockMultipartFile("testFile.img", new byte[]{1, 2, 3});
     }
 
     @Test
@@ -101,12 +103,13 @@ public class VacancyControllerTest {
     }
 
     @Test
-    public void whenGetByIdThenTrue() throws IOException {
-        var vacancy = new Vacancy(1, "test1", "desc1", now(), true, 1, 2);
+    public void whenGetByIdThenVacancyFoundAndRedirectVacancyPage() throws IOException {
+        var vacancy = new Vacancy(1, "test", "desc", now(), true, 1, 2);
         var fileDto = new FileDto(testFile.getOriginalFilename(), testFile.getBytes());
         var vacancyArgumentCaptor = ArgumentCaptor.forClass(Vacancy.class);
         var fileDtoArgumentCaptor = ArgumentCaptor.forClass(FileDto.class);
         when(vacancyService.save(vacancyArgumentCaptor.capture(), fileDtoArgumentCaptor.capture())).thenReturn(vacancy);
+        Mockito.doReturn(Optional.of(vacancy)).when(vacancyService).findById(1);
 
         var model = new ConcurrentModel();
         vacancyController.create(vacancy, testFile, model);
@@ -115,6 +118,31 @@ public class VacancyControllerTest {
         var actualFileDto = fileDtoArgumentCaptor.getValue();
         assertThat(view).isEqualTo("vacancies/one");
         assertThat(actualVacancy).isEqualTo(vacancy);
+        assertThat(fileDto).usingRecursiveComparison().isEqualTo(actualFileDto);
+    }
+
+    @Test
+    public void whenUpdateThenVacancyUpdated() throws IOException {
+        var vacancy1 = new Vacancy(1, "test1", "desc1", now(), true, 1, 2);
+        var fileDto = new FileDto(testFile.getOriginalFilename(), testFile.getBytes());
+        var vacancyArgumentCaptor = ArgumentCaptor.forClass(Vacancy.class);
+        var fileDtoArgumentCaptor = ArgumentCaptor.forClass(FileDto.class);
+        when(vacancyService.save(vacancyArgumentCaptor.capture(), fileDtoArgumentCaptor.capture())).thenReturn(vacancy1);
+        Mockito.doReturn(Optional.of(vacancy1)).when(vacancyService).findById(1);
+
+        var model = new ConcurrentModel();
+        vacancyController.create(vacancy1, testFile, model);
+
+        var vacancy2 = new Vacancy(1, "test2", "desc2", now(), true, 1, 2);
+        when(vacancyService.update(vacancyArgumentCaptor.capture(), fileDtoArgumentCaptor.capture())).thenReturn(vacancy2);
+        Mockito.doReturn(Optional.of(vacancy2)).when(vacancyService).findById(1);
+
+        var view = vacancyController.update(vacancy2, testFile, model);
+
+        var actualVacancy = vacancyArgumentCaptor.getValue();
+        var actualFileDto = fileDtoArgumentCaptor.getValue();
+        assertThat(view).isEqualTo("vacancies/one");
+        assertThat(actualVacancy).isEqualTo(vacancy1);
         assertThat(fileDto).usingRecursiveComparison().isEqualTo(actualFileDto);
     }
 
