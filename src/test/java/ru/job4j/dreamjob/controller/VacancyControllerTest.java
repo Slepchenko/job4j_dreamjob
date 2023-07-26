@@ -124,6 +124,7 @@ public class VacancyControllerTest {
     @Test
     public void whenUpdateThenVacancyUpdated() throws IOException {
         var vacancy1 = new Vacancy(1, "test1", "desc1", now(), true, 1, 2);
+        var vacancy2 = new Vacancy(1, "test2", "desc2", now(), true, 1, 2);
         var fileDto = new FileDto(testFile.getOriginalFilename(), testFile.getBytes());
         var vacancyArgumentCaptor = ArgumentCaptor.forClass(Vacancy.class);
         var fileDtoArgumentCaptor = ArgumentCaptor.forClass(FileDto.class);
@@ -132,18 +133,28 @@ public class VacancyControllerTest {
 
         var model = new ConcurrentModel();
         vacancyController.create(vacancy1, testFile, model);
-
-        var vacancy2 = new Vacancy(1, "test2", "desc2", now(), true, 1, 2);
-        when(vacancyService.update(vacancyArgumentCaptor.capture(), fileDtoArgumentCaptor.capture())).thenReturn(vacancy2);
-        Mockito.doReturn(Optional.of(vacancy2)).when(vacancyService).findById(1);
-
+        when(vacancyService.update(vacancyArgumentCaptor.capture(), fileDtoArgumentCaptor.capture())).thenReturn(true);
         var view = vacancyController.update(vacancy2, testFile, model);
-
         var actualVacancy = vacancyArgumentCaptor.getValue();
         var actualFileDto = fileDtoArgumentCaptor.getValue();
-        assertThat(view).isEqualTo("vacancies/one");
-        assertThat(actualVacancy).isEqualTo(vacancy1);
+        assertThat(view).isEqualTo("redirect:/vacancies");
+        assertThat(actualVacancy).isEqualTo(vacancy2);
         assertThat(fileDto).usingRecursiveComparison().isEqualTo(actualFileDto);
+    }
+
+    @Test
+    public void whenDeleteThenVacancyDeleted() throws IOException {
+        var vacancy = new Vacancy(1, "test", "desc", now(), true, 1, 2);
+        var vacancyArgumentCaptor = ArgumentCaptor.forClass(Vacancy.class);
+        var fileDtoArgumentCaptor = ArgumentCaptor.forClass(FileDto.class);
+        when(vacancyService.save(vacancyArgumentCaptor.capture(), fileDtoArgumentCaptor.capture())).thenReturn(vacancy);
+        var model = new ConcurrentModel();
+        vacancyController.create(vacancy, testFile, model);
+        when(vacancyService.deleteById(1)).thenReturn(true);
+        var view1 = vacancyController.delete(model, 1);
+        var expected = vacancyService.findById(1);
+        assertThat(view1).isEqualTo("redirect:/vacancies");
+        assertThat(expected).isEqualTo(Optional.empty());
     }
 
 }
